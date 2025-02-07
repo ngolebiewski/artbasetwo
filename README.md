@@ -1,3 +1,11 @@
+uvicorn main:app --reload
+
+add .env with:
+DATABASE_URL="your postgres db info"
+
+---
+# FastAPI/RENDER Template to start...
+
 # Deploy FastAPI on Render
 
 Use this repo as a template to deploy a Python [FastAPI](https://fastapi.tiangolo.com) service on Render.
