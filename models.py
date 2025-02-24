@@ -1,5 +1,6 @@
 from typing import Optional, List
-from sqlmodel import Field, SQLModel, Relationship
+from sqlmodel import Field, SQLModel, Relationship, Column, Integer, ForeignKey
+from sqlalchemy import Table, CheckConstraint
 
 '''
 Database Schema from Nick Golebiewski's Harvard CS50SQL FINAL PROJECT, art database in SQLITE3
@@ -9,21 +10,21 @@ https://github.com/ngolebiewski/CS50SQL-final-project-ng/tree/main/studio_artist
 class User(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     username: str = Field(unique=True)
-    password: str  # In real application, hash this!
+    password: str
     email: str
-    admin: Optional[bool] = Field(default=False)  # More Pythonic
+    admin: Optional[bool] = Field(default=False)
 
 class Artist(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     first_name: str
     last_name: str
-    artist_name: Optional[str] = Field(default=None)
+    artist_name: Optional[str] = None
     short_bio: str = Field(max_length=200)
-    long_bio: Optional[str] = Field(default=None)
-    image_url: Optional[str] = Field(default=None)
-    birth_country: Optional[str] = Field(default=None)
-    birth_year: Optional[int] = Field(default=None)
-    death_year: Optional[int] = Field(default=None)
+    long_bio: Optional[str] = None
+    image_url: Optional[str] = None
+    birth_country: Optional[str] = None
+    birth_year: Optional[int] = None
+    death_year: Optional[int] = None
 
     artworks: List["Artwork"] = Relationship(back_populates="artist")
     series: List["Series"] = Relationship(back_populates="artist")
@@ -31,9 +32,9 @@ class Artist(SQLModel, table=True):
 class Department(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(unique=True)
-    description: Optional[str] = Field(max_length=300)
-    web: Optional[bool] = Field(default=False)  # More Pythonic
-    order: Optional[int] = Field(default=None)
+    description: Optional[str] = Field(default=None, max_length=300)
+    web: Optional[bool] = Field(default=False)
+    order: Optional[int] = None
 
     artworks: List["Artwork"] = Relationship(back_populates="department")
 
@@ -41,96 +42,131 @@ class Series(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     artist_id: int = Field(foreign_key="artist.id")
     name: str = Field(unique=True)
-    description: Optional[str] = Field(max_length=300)
+    description: Optional[str] = Field(default=None, max_length=300)
     web: Optional[bool] = Field(default=False)
-    order: Optional[int] = Field(default=None)
+    order: Optional[int] = None
 
-    artist: Artist = Relationship(back_populates="series")
+    artist: "Artist" = Relationship(back_populates="series")
     artworks: List["Artwork"] = Relationship(back_populates="series")
+
+class ArtworksMediumsLink(SQLModel, table=True):
+    artwork_id: int = Field(foreign_key="artwork.id", primary_key=True)
+    medium_id: int = Field(foreign_key="medium.id", primary_key=True)
+
+artworks_mediums_table = Table(
+    "artworks_mediums",
+    SQLModel.metadata,
+    Column("artwork_id", Integer, ForeignKey("artwork.id"), primary_key=True),
+    Column("medium_id", Integer, ForeignKey("medium.id"), primary_key=True),
+)
 
 class Medium(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    name: Optional[str] = Field(default=None, unique=True)
+    name: str = Field(unique=True)
 
-    artworks: List["Artwork"] = Relationship(back_populates="mediums", secondary="artworks_mediums")
-
-class ArtworksMediums(SQLModel, table=True):
-    artwork_id: int = Field(foreign_key="artwork.id", primary_key=True)
-    medium_id: int = Field(foreign_key="medium.id", primary_key=True)
+    artworks: List["Artwork"] = Relationship(back_populates="mediums", link_model=ArtworksMediumsLink)
 
 class Artwork(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     artist_id: int = Field(foreign_key="artist.id")
     title: str
     size: str
-    year: Optional[int] = Field(default=None)
-    end_year: Optional[int] = Field(default=None)
-    image_url: Optional[str] = Field(default=None)
-    hi_res_url: Optional[str] = Field(default=None)
-    description: Optional[str] = Field(default=None)
-    keywords: Optional[str] = Field(default=None)
-    department_id: Optional[int] = Field(default=None, foreign_key="department.id") # Changed to department_id
-    series_id: Optional[int] = Field(default=None, foreign_key="series.id") # Changed to series_id
-    date_added: Optional[str] = Field(default=None) # Timestamp is handled by db
-    price: Optional[float] = Field(default=None)
-    sold: bool = Field(default=False)  # More Pythonic
+    year: Optional[int] = None
+    end_year: Optional[int] = None
+    image_url: Optional[str] = None
+    hi_res_url: Optional[str] = None
+    description: Optional[str] = None
+    keywords: Optional[str] = None
+    department_id: Optional[int] = Field(default=None, foreign_key="department.id")
+    series_id: Optional[int] = Field(default=None, foreign_key="series.id")
+    date_added: Optional[str] = None
+    price: Optional[float] = None
+    sold: bool = Field(default=False)
 
-    artist: Artist = Relationship(back_populates="artworks")
-    department: Optional[Department] = Relationship(back_populates="artworks")
-    series: Optional[Series] = Relationship(back_populates="artworks")
-    mediums: List[Medium] = Relationship(back_populates="artworks", secondary="artworks_mediums")
+    artist: "Artist" = Relationship(back_populates="artworks")
+    department: Optional["Department"] = Relationship(back_populates="artworks")
+    series: Optional["Series"] = Relationship(back_populates="artworks")
+    mediums: List["Medium"] = Relationship(back_populates="artworks", link_model=ArtworksMediumsLink)
     additional_images: List["AdditionalImage"] = Relationship(back_populates="artwork")
 
 class AdditionalImage(SQLModel, table=True):
-    artwork_id: int = Field(foreign_key="artwork.id", primary_key=True)  # Composite key with image_url
-    image_url: str = Field(primary_key=True) # Composite key with artwork_id
+    artwork_id: int = Field(foreign_key="artwork.id", primary_key=True)
+    image_url: str = Field(primary_key=True)
 
-    artwork: Artwork = Relationship(back_populates="additional_images")
+    artwork: "Artwork" = Relationship(back_populates="additional_images")
 
 class Organization(SQLModel, table=True):
+    __table_args__ = (
+        CheckConstraint("type IN ('museum', 'gallery', 'non-profit', 'restaurant', 'business', 'other')", name="check_type"),
+    )
+
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str
-    address_1: Optional[str] = Field(default=None)
-    address_2: Optional[str] = Field(default=None)
+    address_1: Optional[str] = None
+    address_2: Optional[str] = None
     city: str
     state: str
     country: Optional[str] = Field(default="United States")
-    phone: Optional[str] = Field(default=None)
-    email: Optional[str] = Field(default=None)
-    type: str = Field(
-        sa_column_kwargs={"check_constraint": "type IN ('museum', 'gallery', 'non-profit', 'restaurant', 'business', 'other')"}
-    )
+    phone: Optional[str] = None
+    email: Optional[str] = None
+    type: str
 
     persons: List["Person"] = Relationship(back_populates="organization")
     sold_artworks: List["SoldArtwork"] = Relationship(back_populates="organization")
 
 class Person(SQLModel, table=True):
+    __table_args__ = (
+        CheckConstraint("type IN ('collector', 'friend', 'artist', 'client', 'curator', 'other')", name="check_type"),
+    )
+
     id: Optional[int] = Field(default=None, primary_key=True)
     first_name: str
     last_name: str
     email: Optional[str] = Field(default=None, unique=True)
-    phone: Optional[int] = Field(default=None)
+    phone: Optional[int] = None
     org_id: Optional[int] = Field(default=None, foreign_key="organization.id")
-    note: Optional[str] = Field(default=None)
-    type: str = Field(default="contact", sa_column_kwargs={"check_constraint": "type IN ('collector', 'friend', 'artist', 'client', 'curator', 'other')"})
+    note: Optional[str] = None
+    type: str = Field(default="contact")
 
-    organization: Optional[Organization] = Relationship(back_populates="persons")
-    sold_artworks: List["SoldArtwork"] = Relationship(back_populates="person")
+    organization: Optional["Organization"] = Relationship(back_populates="persons")
+    # sold_artworks: List["SoldArtwork"] = Relationship(back_populates="sold_artworks")
+    sold_artworks: List["SoldArtwork"] = Relationship(back_populates="person") # Corrected Line
 
 class SoldArtwork(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     artwork_id: int = Field(foreign_key="artwork.id")
     person_id: int = Field(foreign_key="person.id")
     org_id: Optional[int] = Field(default=None, foreign_key="organization.id")
-    price: Optional[float] = Field(default=None)
-    date_sold: Optional[str] = Field(default=None) # Date is handled by db
-    timestamp: Optional[str] = Field(default=None) # Timestamp is handled by db
+    price: Optional[float] = None
+    date_sold: Optional[str] = None
+    timestamp: Optional[str] = None
 
-    artwork: Artwork = Relationship()
-    person: Person = Relationship(back_populates="sold_artworks")
-    organization: Optional[Organization] = Relationship(back_populates="sold_artworks")
+    artwork: "Artwork" = Relationship()
+    person: "Person" = Relationship(back_populates="sold_artworks")
+    organization: Optional["Organization"] = Relationship(back_populates="sold_artworks")
+
+# Need to ensure view_creator.py script is run to create views after each migration
+
+class MediumsByArtwork(SQLModel, table=True):
+    __tablename__ = "mediums_by_artwork"
+
+    id: int = Field(primary_key=True)
+    title: str
+    mediums: Optional[str]  # Comma-separated string of mediums
 
 
+class ArtList(SQLModel, table=True):
+    __tablename__ = "art_list"
 
-# Views (Define these outside the model definitions, in your main application logic or migration scripts)
-# Triggers (Define these using SQLAlchemy Core in your migration scripts)
+    id: int = Field(primary_key=True)
+    name: str
+    title: str
+    size: Optional[str]
+    year: Optional[int]
+    mediums: Optional[str]  # From mediums_by_artwork
+    image_url: Optional[str]
+    description: Optional[str]
+    series: Optional[str]
+    department: Optional[str]
+    price: Optional[float]
+    sold: Optional[bool]

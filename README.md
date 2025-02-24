@@ -3,6 +3,15 @@ uvicorn main:app --reload
 add .env with:
 DATABASE_URL="your postgres db info"
 
+
+# Alembic
+- `alembic current`
+- `alembic revision --autogenerate -m "your note here:)"`
+- `alembic upgrade head`
+
+
+
+---
 ---
 # FastAPI/RENDER Template to start...
 
