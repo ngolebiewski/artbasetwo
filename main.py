@@ -2,7 +2,7 @@ from typing import Optional
 from fastapi import FastAPI, Depends
 from routers import artist, medium
 # from . import models  # Import your models 
-# from .database import create_db_and_tables, get_session # Import from database.py
+from database import create_db_and_tables, get_session # Import from database.py
 # from sqlmodel import Session
 
 app = FastAPI(

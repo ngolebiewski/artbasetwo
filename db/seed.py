@@ -1,3 +1,5 @@
+# run as: python3 -m db.seed
+
 from sqlmodel import Session, create_engine
 from models import User, Artist, Medium, Department, Series
 from datetime import datetime
@@ -12,6 +14,7 @@ logging.basicConfig(level=logging.INFO)
 # Initialize the database connection
 load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URL")
+print(DATABASE_URL)
 engine = create_engine(DATABASE_URL)
 
 # Seed Art Mediums into the database

@@ -35,6 +35,15 @@ async def create_medium(medium_create: MediumCreate, session: AsyncSession = Dep
         await session.rollback()
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Medium name already exists")
 
+@router.get("/{medium_id}", response_model=Medium)
+async def read_medium_by_id(medium_id: int, session: AsyncSession = Depends(get_db)):
+    """Retrieve a medium by ID."""
+    medium = await session.get(Medium, medium_id)
+    if not medium:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Medium not found")
+    return medium
+    
+
 @router.put("/{medium_id}", response_model=Medium)
 async def update_medium(medium_id: int, medium_update: MediumUpdate, session: AsyncSession = Depends(get_db)):
     """Update a medium by ID."""
