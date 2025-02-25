@@ -1,9 +1,8 @@
 from typing import Optional
 from fastapi import FastAPI, Depends
 from routers import artist, medium
-# from . import models  # Import your models 
-from database import create_db_and_tables, get_session # Import from database.py
-# from sqlmodel import Session
+from database import create_db_and_tables, get_db
+from sqlalchemy.ext.asyncio import AsyncSession
 
 app = FastAPI(
     title="Art Base One",
@@ -15,15 +14,9 @@ app = FastAPI(
     version="0.0.2",
 )
 
-# @app.on_event("startup")
-# async def startup_event():
-#     create_db_and_tables() # Call the setup function
-
-# # Dependency Injection for database session
-# @app.get("/items/")
-# def read_items(session: Session = Depends(get_session)):
-#     # use the session here
-#     pass
+@app.on_event("startup")
+async def startup_event():
+    await create_db_and_tables() # Call the setup function
 
 app.include_router(artist.router, prefix="/artist", tags=["artist"])
 app.include_router(medium.router, prefix="/medium", tags=["medium"])
@@ -31,7 +24,3 @@ app.include_router(medium.router, prefix="/medium", tags=["medium"])
 @app.get("/")
 async def root():
     return {"message": "Welcome to Golebiewski Artworks Database API"}
-
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Optional[str] = None):
-    return {"item_id": item_id, "q": q}
