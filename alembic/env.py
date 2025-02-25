@@ -22,6 +22,7 @@ from models import (
 # Load environment variables
 load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URL")
+print(DATABASE_URL)
 
 # Alembic Config object
 config = context.config

@@ -14,6 +14,7 @@ load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URL")
 engine = create_engine(DATABASE_URL)
 
+# Seed Art Mediums into the database
 def seed_medium(session: Session):
     mediums = [
         'watercolor', 
@@ -28,12 +29,6 @@ def seed_medium(session: Session):
         'graphite',
         'carbon paper'
     ]
-    
-    # # Error prone way of creating Medium instances and adding to the session
-    # medium_objects = [Medium(name=medium) for medium in mediums]
-    # session.add_all(medium_objects)
-    # session.commit()
-    
     
     for medium_name in mediums:
         try:

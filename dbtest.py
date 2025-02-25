@@ -12,6 +12,7 @@ try:
     engine = create_engine(postgres_url)
     with engine.connect() as conn:  # Try to establish a connection
         print("SQLAlchemy engine connection successful!")
+        print(postgres_url)
         # You can execute a simple query here to further verify:
         result = conn.execute(text("SELECT 1"))  # A very basic query
         print(result.fetchone()) # Should print (1,)
