@@ -1,34 +1,55 @@
-uvicorn main:app --reload
+# Artist's Artwork API: 
 
-add .env with:
-DATABASE_URL="your postgres db info"
+I've worked as a visual artist for the last 20/25 years, and have a lot of artwork!
+This is an API in line with something like the Met Museum of Art's artwork API, in order to have a place to archive -- and make accessible -- all my artwork.
 
+Also, there can be many artists in here. And it can be also used as a CRM. This is all yet to come. In the end, this API should be suitable for a Museum or Gallery use. 
 
-# Alembic
+Can then build a portfolio, and API access tool to scan throught the artworks -- and then for the artist to process images into whatever formats needed.
+
+-Nick
+
+## Tech
+
+### Backend
+Python & FastAPI & PostgreSQL:
+Choosing Pythonfor it's rich image processing and analyzing libraries like PILLOW and NUMPY. Therefore building the API with FastAPI and connecting to these server-side image processing powerhouses. Originally, I designed the schema and wrote the database in SQLITE, however, for the web and produciton, Postgres to make it scalable.
+
+### Frontend: 
+TK. Planning on Typescript and Next.JS. The latter for proper SEO on a largely read-heavy portfolio site + API search tool/GUI. Typescript, becuase it is time to use a more production ready iteration of JavaScript. 
+
+# Setup & Development
+
+## Install and setup
+- Clone
+- install requirements
+- create postgres DB locally + one online if deploying to the world wide web.
+- add .env with: `DATABASE_URL="your postgres db info"`
+    - End up with two, also the online Postgres db, commenting out the one not in use.
+- Run to set up your db `alembic upgrade head`
+- Seed db: `python3 -m db.seed`
+
+## Run locally
+- `python -m uvicorn main:app --reload`  
+- OR `uvicorn main:app --reload`
+
+## Alembic for Database Migrations
 - `alembic current`
 - `alembic revision --autogenerate -m "your note here:)"`
 - `alembic upgrade head`
 
-
-
-Run: `python -m uvicorn main:app --reload`  
-
-# Update requirements when adding new libraries/packages...
+## Update requirements when adding new libraries/packages...
 - `pip freeze > requirements.txt`
 
 
-
 ---
----
-# FastAPI/RENDER Template to start...
-
-# Deploy FastAPI on Render
-
-Use this repo as a template to deploy a Python [FastAPI](https://fastapi.tiangolo.com) service on Render.
+### Start Template and Deploying to RENDER
+Note: used this repo as a template to deploy a Python [FastAPI](https://fastapi.tiangolo.com) service on Render.
+https://github.com/render-examples/fastapi/generate
 
 See https://render.com/docs/deploy-fastapi or follow the steps below:
 
-## Manual Steps
+### Manual Steps
 
 1. You may use this repository directly or [create your own repository from this template](https://github.com/render-examples/fastapi/generate) if you'd like to customize the code.
 2. Create a new Web Service on Render.
@@ -41,11 +62,3 @@ See https://render.com/docs/deploy-fastapi or follow the steps below:
     ```
 
 6. Click Create Web Service.
-
-Or simply click:
-
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/render-examples/fastapi)
-
-## Thanks
-
-Thanks to [Harish](https://harishgarg.com) for the [inspiration to create a FastAPI quickstart for Render](https://twitter.com/harishkgarg/status/1435084018677010434) and for some sample code!
