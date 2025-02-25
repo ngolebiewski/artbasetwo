@@ -11,6 +11,11 @@ DATABASE_URL="your postgres db info"
 
 
 
+Run: `python -m uvicorn main:app --reload`  
+
+# Update requirements when adding new libraries/packages...
+- `pip freeze > requirements.txt`
+
 ---
 ---
 # FastAPI/RENDER Template to start...

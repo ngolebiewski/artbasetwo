@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlmodel import SQLModel
 import os
 from dotenv import load_dotenv
-from . import models
+import models
 
 
 # Load environment variables from .env file

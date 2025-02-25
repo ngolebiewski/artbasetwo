@@ -1,6 +1,6 @@
 from typing import Optional
 from fastapi import FastAPI, Depends
-from routers import artists
+from routers import artist, medium
 # from . import models  # Import your models 
 # from .database import create_db_and_tables, get_session # Import from database.py
 # from sqlmodel import Session
@@ -25,7 +25,8 @@ app = FastAPI(
 #     # use the session here
 #     pass
 
-app.include_router(artists.router, prefix="/artists", tags=["artists"])
+app.include_router(artist.router, prefix="/artist", tags=["artist"])
+app.include_router(medium.router, prefix="/medium", tags=["medium"])
 
 @app.get("/")
 async def root():
