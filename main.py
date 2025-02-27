@@ -1,6 +1,6 @@
 from typing import Optional
 from fastapi import FastAPI, Depends
-from routers import artist, auth, medium, department, series
+from routers import artist, auth, medium, department, series, artist
 from database import create_db_and_tables, get_db
 from sqlalchemy.ext.asyncio import AsyncSession
 

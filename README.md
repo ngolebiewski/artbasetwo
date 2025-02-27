@@ -24,8 +24,15 @@ TK. Planning on Typescript and Next.JS. The latter for proper SEO on a largely r
 - Clone
 - install requirements
 - create postgres DB locally + one online if deploying to the world wide web.
-- add .env with: `DATABASE_URL="your postgres db info"`
-    - End up with two, also the online Postgres db, commenting out the one not in use.
+- add .env with: 
+    - End up with two Database URLS, also the online Postgres db, commenting out the one not in use.
+    
+    `DATABASE_URL="your postgres db info"`
+    `SECRET_KEY=<YOUR KEY>`
+    `ACCESS_TOKEN_EXPIRE_MINUTE=1200`
+    `ADMIN_PWD=<YOUR password>`
+    `ART_LOVER_PWD=<YOUR password>` 
+
 - Run to set up your db `alembic upgrade head`
 - Seed db: `python3 -m db.seed`
 
