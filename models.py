@@ -33,7 +33,7 @@ class Department(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(unique=True)
     description: Optional[str] = Field(default=None, max_length=300)
-    web: Optional[bool] = Field(default=False)
+    web: Optional[bool] = Field(default=True)
     order: Optional[int] = None
 
     artworks: List["Artwork"] = Relationship(back_populates="department")
@@ -43,7 +43,7 @@ class Series(SQLModel, table=True):
     artist_id: int = Field(foreign_key="artist.id")
     name: str = Field(unique=True)
     description: Optional[str] = Field(default=None, max_length=300)
-    web: Optional[bool] = Field(default=False)
+    web: Optional[bool] = Field(default=True)
     order: Optional[int] = None
 
     artist: "Artist" = Relationship(back_populates="series")
