@@ -1,6 +1,6 @@
 from typing import Optional
 from fastapi import FastAPI, Depends
-from routers import artist, auth, medium
+from routers import artist, auth, medium, department
 from database import create_db_and_tables, get_db
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -20,6 +20,7 @@ async def startup_event():
 
 app.include_router(artist.router, prefix="/artist", tags=["artist"])
 app.include_router(medium.router, prefix="/medium", tags=["medium"])
+app.include_router(department.router, prefix="/department", tags=["department"])
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
 
 @app.get("/")
